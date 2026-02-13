@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Happy Birthday Hlumelo 🎉</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  height: 100vh;
+  background: radial-gradient(circle at top, #4f6fdc, #9c2a3a);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ✉️ ENVELOPE */
+.envelope {
+  width: 520px;
+  height: 360px;
+  background: linear-gradient(145deg, #020616, #120003);
+  border-radius: 22px;
+  box-shadow: 0 40px 90px rgba(0,0,0,0.85);
+  position: relative;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.envelope::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #5c0010, #050a2a);
+  clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+  border-radius: 22px;
+  z-index: 2;
+  transition: transform 1s ease;
+}
+
+.envelope.open::before {
+  transform: rotateX(180deg);
+  transform-origin: top;
+}
+
+/* 💌 CARD */
+.card {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 480px;
+  height: 300px;
+  background: linear-gradient(180deg, #ffffff, #f1f1f1);
+  border-radius: 18px;
+  padding: 25px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: 1s ease;
+}
+
+.envelope.open .card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.happy {
+  font-family: 'Great Vibes', cursive;
+  font-size: 64px;
+  color: #7a0c1e;
+}
+
+.name {
+  font-size: 32px;
+  font-weight: 600;
+  color: #0a1a3a;
+  margin-top: 5px;
+}
+
+/* 📸 PHOTO */
+.photo {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-top: 10px;
+  border: 4px solid #7a0c1e;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* 🎉 FALLING */
+.effect {
+  position: absolute;
+  top: -10px;
+  animation: fall linear forwards;
+  pointer-events: none;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(120vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+/* 🎆 FIREWORK */
+.firework {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: explode 1.2s ease-out forwards;
+}
+
+@keyframes explode {
+  to {
+    transform: translate(var(--x), var(--y));
+    opacity: 0;
+  }
+}
+
+/* 📱 MOBILE */
+@media (max-width:600px){
+  .envelope{ width:320px;height:220px;}
+  .card{ width:280px;height:180px;}
+  .happy{ font-size:40px;}
+  .name{ font-size:22px;}
+  .photo{ width:70px;height:70px;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🎵 MUSIC (AUTO START ATTEMPT) -->
+<audio id="music" autoplay loop>
+  <source src="https://cdn.pixabay.com/audio/2023/03/30/audio_4a3b2e6e69.mp3" type="audio/mpeg">
+</audio>
+
+<div class="envelope" id="envelope">
+  <div class="card">
+    <div class="happy">Happy Birthday</div>
+    <div class="name">Hlumelo 🎉</div>
+
+    <!-- 📸 PUT IMAGE FILE IN SAME FOLDER -->
+    <img src="hlumelo.jpg" alt="Hlumelo" class="photo">
+  </div>
+</div>
+
+<script>
+const env = document.getElementById("envelope");
+const music = document.getElementById("music");
+
+/* Force play on any interaction */
+document.addEventListener("click", () => music.play());
+document.addEventListener("touchstart", () => music.play());
+
+window.onload = () => {
+  setTimeout(() => env.classList.add("open"), 600);
+  setInterval(rain, 600);
+  setInterval(crazyFireworks, 250);
+};
+
+function rain(){
+  const items=["🎉","🎂","🥳","🎈","✨","💙","❤️","🎊"];
+  for(let i=0;i<20;i++){
+    const e=document.createElement("div");
+    e.className="effect";
+    e.innerText=items[Math.floor(Math.random()*items.length)];
+    e.style.left=Math.random()*100+"vw";
+    e.style.fontSize=Math.random()*28+18+"px";
+    e.style.animationDuration=Math.random()*3+3+"s";
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(),6000);
+  }
+}
+
+function crazyFireworks(){
+  const x=Math.random()*window.innerWidth;
+  const y=Math.random()*window.innerHeight*0.6;
+  for(let i=0;i<50;i++){
+    const fw=document.createElement("div");
+    fw.className="firework";
+    fw.style.left=x+"px";
+    fw.style.top=y+"px";
+    fw.style.background=["gold","red","blue","white","orange"][Math.floor(Math.random()*5)];
+    fw.style.setProperty("--x",(Math.random()*350-175)+"px");
+    fw.style.setProperty("--y",(Math.random()*350-175)+"px");
+    document.body.appendChild(fw);
+    setTimeout(()=>fw.remove(),1200);
+  }
+}
+</script>
+
+</body>
+</html>
