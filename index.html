@@ -38,23 +38,9 @@ body {
 .slide-overlay {
   position: fixed;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(3,6,18,0.72), rgba(3,6,18,0.82));
+  background: linear-gradient(to bottom, rgba(3,6,18,0.7), rgba(3,6,18,0.85));
   z-index: 1;
 }
-
-/* CORNERS */
-.corner {
-  position: fixed;
-  width: 55px; height: 55px;
-  border-color: #1e3cb4;
-  border-style: solid;
-  z-index: 10;
-  opacity: 0.75;
-}
-.corner.tl { top:18px; left:18px; border-width:3px 0 0 3px; }
-.corner.tr { top:18px; right:18px; border-width:3px 3px 0 0; }
-.corner.bl { bottom:18px; left:18px; border-width:0 0 3px 3px; }
-.corner.br { bottom:18px; right:18px; border-width:0 3px 3px 0; }
 
 /* CONFETTI */
 #confettiCanvas {
@@ -130,10 +116,24 @@ body {
 
 @keyframes shake {
   0% { transform:translateX(0); }
-  25% { transform:translateX(-5px); }
-  50% { transform:translateX(5px); }
+  25% { transform:translateX(-6px); }
+  50% { transform:translateX(6px); }
   75% { transform:translateX(-3px); }
   100% { transform:translateX(0); }
+}
+
+/* SCREEN SHAKE */
+body.screen-shake {
+  animation: screenShake 0.5s ease;
+}
+
+@keyframes screenShake {
+  0% { transform: translate(0,0); }
+  20% { transform: translate(-8px,5px); }
+  40% { transform: translate(8px,-5px); }
+  60% { transform: translate(-6px,3px); }
+  80% { transform: translate(6px,-3px); }
+  100% { transform: translate(0,0); }
 }
 
 /* DOTS */
@@ -177,19 +177,18 @@ body {
   <div class="name-title" id="nameTitle">Happy Birthday <span>Jesica</span></div>
   <div class="divider" id="divider"></div>
   <div class="lyrics-container" id="lyricsContainer"></div>
-  <div class="sub-text" id="subText">🎂 She arrived and the world got bolder 🎂</div>
 </div>
 
 <script>
 
-/* ✅ LOCAL IMAGES */
+/* ✅ IMAGES (.JPEG) */
 const IMAGES = [
-  "J1.jpg",
-  "J2.jpg",
-  "J3.jpg",
-  "J4.jpg",
-  "J5.jpg",
-  "J6.jpg"
+  "J1.JPEG",
+  "J2.JPEG",
+  "J3.JPEG",
+  "J4.JPEG",
+  "J5.JPEG",
+  "J6.JPEG"
 ];
 
 /* SLIDESHOW */
@@ -215,12 +214,66 @@ let current = 0;
 setInterval(()=>{
   slides[current].classList.remove('active');
   dots[current].classList.remove('active');
-
   current = (current+1)%IMAGES.length;
-
   slides[current].classList.add('active');
   dots[current].classList.add('active');
 },3500);
+
+/* 🎉 CONFETTI */
+const canvas = document.getElementById("confettiCanvas");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+let confetti = [];
+
+function spawnConfetti(count = 25) {
+  const emojis = ["🎉","🎊","🎂","🎁","✨","🎈"];
+
+  for (let i = 0; i < count; i++) {
+    confetti.push({
+      x: Math.random() * canvas.width,
+      y: -20,
+      speed: 2 + Math.random() * 3,
+      drift: (Math.random() - 0.5) * 2,
+      emoji: emojis[Math.floor(Math.random() * emojis.length)],
+      size: 20 + Math.random() * 10
+    });
+  }
+}
+
+function drawConfetti() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  confetti = confetti.filter(p => {
+    p.y += p.speed;
+    p.x += p.drift;
+    if (p.y > canvas.height) return false;
+
+    ctx.font = p.size + "px serif";
+    ctx.fillText(p.emoji, p.x, p.y);
+    return true;
+  });
+
+  requestAnimationFrame(drawConfetti);
+}
+drawConfetti();
+
+/* 💥 SCREEN SHAKE */
+function shakeScreen() {
+  document.body.classList.remove('screen-shake');
+  void document.body.offsetWidth;
+  document.body.classList.add('screen-shake');
+
+  setTimeout(() => {
+    document.body.classList.remove('screen-shake');
+  }, 500);
+}
 
 /* SONG */
 const lines = [
@@ -264,6 +317,7 @@ function runSong(){
   function next(){
     if(i>=elements.length){
       subText.classList.add('visible');
+      spawnConfetti(40);
       return;
     }
 
@@ -274,7 +328,7 @@ function runSong(){
 
     elements[i].classList.add('active');
 
-    /* ✅ AUTO SCROLL */
+    /* AUTO SCROLL */
     if(i>=4){
       elements[i].scrollIntoView({
         behavior:"smooth",
@@ -288,6 +342,9 @@ function runSong(){
       el.classList.remove("shake");
       void el.offsetWidth;
       el.classList.add("shake");
+
+      spawnConfetti(30);
+      shakeScreen();
     }
 
     i++;
